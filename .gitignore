@@ -1,0 +1,12 @@
+# BirdLife reference material
+# data/
+
+# Generated files
+output/
+
+# Python
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
