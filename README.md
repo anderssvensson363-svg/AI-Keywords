@@ -74,8 +74,7 @@ IMatch ska endast hantera slutresultatet – all AI-bearbetning sker utanför IM
 - Felaktiga artbestämningar ska undvikas hellre än att gå för långt i detalj
 
 Exempel:
-- `AI|Bird|Anatidae|Gräsand`
-- eller bara `AI|Bird|Anatidae`
+- `AI|Natur|Fågel|Tätting|Stare|Sturnus vulgaris`
 
 ---
 
