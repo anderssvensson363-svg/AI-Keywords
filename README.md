@@ -1,139 +1,22 @@
-# AI-Keywords for IMatch
+# AI-Keywords
 
 ## 📌 Projektöversikt
+Detta projekt är ett lokalt, modulärt system utvecklat för att automatisera genereringen av AI-baserade keywords och metadata för stads-, rese- och turistbilder (med särskilt fokus på resor till Kina). 
 
-Detta projekt är ett lokalt, modulärt system för automatisk generering av AI-baserade keywords för bildarkiv i IMatch.
+Systemet är optimerat för att hantera miljöanalys, scenförståelse och avancerad textigenkänning (OCR) på skyltar, byggnader och platser, utan att störa den manuella keyword-strukturen i IMatch.
 
-Målet är att analysera RAW- och bildfiler med hjälp av AI-modeller (Ollama, YOLO och specialiserade vision-modeller) och generera strukturerade, kontrollerbara keywords.
+All AI-bearbetning sker helt isolerat utanför IMatch via en robust och fel-tolerant pipeline.
 
-IMatch ska endast hantera slutresultatet – all AI-bearbetning sker utanför IMatch.
+—
 
----
+## 🎯 Mål & Grundprinciper
+- **Säker struktur:** All AI-genererad data lagras strikt under `Keywords|AI|Platser` eller `Keywords|AI|Stad` för att skydda den manuella hierarkin.
+- **Flerspråkig OCR:** Systemet kan identifiera komplexa geometriska former och tecken (t.ex. kinesiska Hanzi) och spara både råtext och svensk översättning.
+- **Kontextbaserad taggning:** Använder vision-modeller för att identifiera landmärken, arkitektur, kulturföremål och generella miljöer (t.ex. ”Tempel”, ”Skyskrapa”, ”Bambu”).
 
-## 🎯 Mål
+—
 
-- Automatisera bildtaggning med AI
-- Identifiera objekt som:
-  - Fåglar
-  - Växter
-  - Insekter
-  - Landskap och objekt
-- Generera kontrollerade keywords under `Keywords|AI`
-- Undvika att störa användarens manuella keyword-struktur i IMatch
-- Minimera fel genom att använda konfidensbaserade beslut
+## 🏗️ Pipeline-arkitektur (JSONL-baserad)
 
----
-
-## 🧠 Grundprinciper
-
-- AI får aldrig skriva direkt till manuella keyword-hierarkin
-- All AI-data lagras under `Keywords|AI`
-- Hellre generell klassificering än felaktig artbestämning
-- Svenska namn används i slutresultat, men modeller kan arbeta med latinska namn internt
-- GPS och metadata används som stöd, inte som keywords
-
----
-
-## 🏗️ Systemarkitektur (planerad)
-
-1. Förbearbetning av bild
-   - Skala ner till preview (ca 768–1024 px)
-   - Extrahera EXIF/XMP (GPS, tid, rating)
-
-2. Objektidentifiering
-   - YOLO används för att hitta objekt i bilden
-   - Bounding boxes genereras
-
-3. Crop & detaljanalys
-   - Utskurna objekt analyseras i högre upplösning
-
-4. AI-analys
-   - Ollama/VLM-modeller används för klassificering
-   - Eventuella specialmodeller för:
-     - Fåglar
-     - Växter
-     - Insekter
-
-5. Kunskapslager
-   - Översättning (latinska → svenska namn)
-   - Konfidensregler
-   - Filter (GPS, kategori)
-
-6. Output
-   - JSONL som mellanformat
-   - XMP/ExifTool uppdatering
-   - Slutligen import till IMatch
-
----
-
-## 🐦 Fåglar (speciell regel)
-
-- Familjenivå är tillräcklig vid osäkerhet
-- Artnamn används endast vid hög konfidens
-- Svenska namn används i slutlig output
-- Felaktiga artbestämningar ska undvikas hellre än att gå för långt i detalj
-
-Exempel:
-- `AI|Natur|Fågel|Tätting|Stare|Sturnus vulgaris`
-
----
-
-## 🌿 Växter och natur
-
-- Träd och växter klassificeras grovt om osäkerhet finns
-- Exempel:
-  - Tree
-  - Flower
-  - Bamboo
-  - Fern
-
-Detaljnivå används endast vid hög konfidens
-
----
-
-## 📂 Planerad projektstruktur
-
-AI-Keywords/
-│
-├── README.md
-├── docs/
-├── scripts/
-├── data/
-├── prompts/
-├── tests/
-└── output/
-
-
----
-
-## ⚙️ Teknologi
-
-- WSL (Linux i Windows)
-- Python
-- Ollama (vision-language models)
-- YOLO (object detection)
-- ImageMagick / ExifTool
-- Git + GitHub
-
----
-
-## 🔁 Designmål
-
-Systemet ska vara:
-
-- modulärt
-- utbytbart (nya AI-modeller ska kunna bytas in utan ombyggnad)
-- deterministiskt nog för batch-körning
-- säkert för stora bildarkiv (20 000+ bilder)
-
----
-
-## 📌 Status
-
-Tidigt utvecklingsstadium.
-
-Första steg:
-- Git setup klar
-- Projektstruktur skapad
-- Första pipeline under design
+Processen körs frikopplat i olika steg för att spara VRAM och förhindra dataförlust vid batch-körningar av tusentals bilder:
 
